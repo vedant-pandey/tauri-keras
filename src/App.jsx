@@ -2,51 +2,36 @@ import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import './App.css';
 import ReactPlayer from 'react-player';
+import { AudioRecorder } from 'react-audio-voice-recorder';
 
 function App() {
-	const [myStream, setMyStream] = useState(null);
-
-	const startRec = async () => {
-		const stream = await navigator.mediaDevices.getUserMedia({
-			audio: true,
-		});
-		setMyStream(stream);
+	const [conf, setConf] = useState(null);
+	const addAudioElement = (blob) => {
+		const url = URL.createObjectURL(blob);
+		const audio = document.createElement("audio");
+		audio.src = url;
+		audio.controls = true;
+		document.body.appendChild(audio);
+		console.log(url)
+		console.log(typeof url)
+		invoke("record", {blobUrl: url}).then(resp => {
+			setConf(resp)
+		})
 	};
-
-	const stopRec = () => {
-		if (myStream) {
-			for (let track of myStream.getTracks()) {
-				track.stop();
-			}
-			setMyStream(null);
-		}
-	};
-
-  useEffect(() => {
-    console.log(myStream)
-  }, [myStream])
 
 	return (
 		<div className="container">
 			<h1>Welcome to laugh detector</h1>
-			<button type="submit" onClick={startRec}>
-				Start recording
-			</button>
-			{myStream && (
-				<>
-					<button type="submit" onClick={stopRec}>
-						Stop recording
-					</button>
-					<h1>My Stream</h1>
-
-					<ReactPlayer
-						controls={true}
-						height="300px"
-						width="500px"
-						url={myStream}
-					/>
-				</>
-			)}
+			<AudioRecorder
+				onRecordingComplete={addAudioElement}
+				audioTrackConstraints={{
+					noiseSuppression: true,
+					echoCancellation: true,
+				}}
+				downloadOnSavePress={true}
+				downloadFileExtension="mp3"
+			/>
+			<p>{conf}</p>
 		</div>
 	);
 }

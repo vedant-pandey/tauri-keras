@@ -8,7 +8,8 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn record() -> String {
+fn record(blob_url: &str) -> String {
+    println!("{blob_url}");
     format!("i say the hello my friend")
 }
 
