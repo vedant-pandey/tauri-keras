@@ -7,9 +7,14 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn record() -> String {
+    format!("i say the hello my friend")
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, record])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
