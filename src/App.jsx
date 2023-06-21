@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import './App.css';
 import { AudioRecorder } from 'react-audio-voice-recorder';
@@ -10,7 +10,8 @@ function App() {
 		const url = URL.createObjectURL(blob);
 		setUrl(url);
 		invoke("record", {blobUrl: url}).then(resp => {
-			setConf(resp)
+			// setConf(resp)
+			console.log(resp)
 		})
 	};
 
